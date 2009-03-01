@@ -116,7 +116,7 @@ public class PhoneFinder extends Activity{
             case MENU_INFO:
             	new AlertDialog.Builder(this) 
 			    .setTitle("Phone Finder") 
-			    .setMessage("Author:Kevin AN Email:anyupu@gmail.com Blog:http://kevin-an.blogspot.com") 
+			    .setMessage("Author:Kevin AN Email:anyupu@gmail.com Blog:" + Consts.URL_INFO_LINK) 
 			    .show();
                 return true;
             case MENU_SHARE:

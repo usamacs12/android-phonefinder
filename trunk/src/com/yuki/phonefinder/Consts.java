@@ -20,7 +20,7 @@ public final class Consts {
 	static final String URL_MARKET_SEARCH =
 	        "http://market.android.com/search?q=pname:com.yuki.phonefinder";
     /** Web site containing more information about this application. */
-    static final String URL_INFO_LINK = "http://kevin-an.blogspot.com";
+    static final String URL_INFO_LINK = "http://code.google.com/p/android-phonefinder/";
     
     public static final String PASSWORD_PREF_KEY = "VERIFYCODE";
 }

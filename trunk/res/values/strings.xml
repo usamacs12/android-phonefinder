@@ -2,9 +2,9 @@
 <resources>
     <string name="hello"></string>
     <string name="app_name">Phone Finder</string>
-    <string name="app_desc">When your phone is lost or stolen you will be able to use someone else's phone to retrieve the GPS coordinates at your phone's location to help you find it via a SMS with special format.</string>
-    <string name="app_help">I've entered "123456" as default for the verify code. Now you can send a text message with "LOCATE:123456" as the body of the text as shown below:</string>
-    <string name="app_tip">You can change the Verify Code into anything you would not forgot via clicking button above</string>
+    <string name="app_desc">When your phone is lost or stolen you will be able to use someone else's phone to retrieve the GPS coordinates at your phone's location to help you find it via a SMS include <B>Verify</B> Code set by yourself.</string>
+    <string name="app_help">I've entered "Heydude" as default for the verify code. Now you can send a text message with "Heydude" as the body of the text as shown below:</string>
+    <string name="app_tip">It can be changed it to anything by clicking button above.</string>
     <string name="notify_text">Phone Finder Notice:</string>
 	<string name="alert_dialog_text_entry">Change Verify Code</string>
 	<string name="alert_dialog_password">New Verify Code:</string>

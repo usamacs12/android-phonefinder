@@ -15,63 +15,16 @@
 
 package com.yuki.phonefinder;
 
-import java.util.List;
-import java.util.Locale;
-
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.telephony.gsm.SmsManager;
 import android.telephony.gsm.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 public class SmsIntentReceiver extends BroadcastReceiver
 {	
-	private void sendGPSData(Context context, Intent intent, SmsMessage inMessage)
-	{
-		LocationManager lm = null;
-		Location location = null;
-		String slocation = "unknown";
-		
-		lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-		location = lm.getLastKnownLocation("gps");
-		if (location == null)
-			location = lm.getLastKnownLocation("network");
-		
-		Geocoder gc = new Geocoder(context, Locale.getDefault());
-		Address addr;
-		/*
-		 * note: Address.toString() or Location.toString() is bug here , cause it will make a NULL POINTER EXCEPTION to sendTextMessage();
-		 */
-		try{
-			Double lat = location.getLatitude();
-			Double lon = location.getLongitude();
-			List<Address> myList = gc.getFromLocation(lat, lon, 1);
-			addr = myList.get(0);
-			slocation = addr.getLocality();
-			slocation += "|" + addr.getThoroughfare();
-			slocation += "|" + addr.getFeatureName();
-			slocation += "|" + addr.getSubAdminArea();
-			slocation += "|Lat:" + Double.toString(lat);
-			slocation += "|Lon:" + Double.toString(lon);
-			
-			PendingIntent dummyEvent = PendingIntent.getBroadcast(context, 0, new Intent("com.yuki.phonefinder.IGNORE_ME"), 0);
-			
-			SmsManager.getDefault().sendTextMessage(intent.getExtras().getString("dest"), null, slocation, dummyEvent, dummyEvent);
-		}catch(Exception e){
-			Log.e("PhoneFinder","LocationService Exception", e );
-		}
-		Toast.makeText(context, context.getResources().getString(R.string.notify_text) + slocation, Toast.LENGTH_SHORT).show();
-	}
-	
 	private SmsMessage[] getMessagesFromIntent(Intent intent)
 	{
 		SmsMessage retMsgs[] = null;
@@ -108,26 +61,32 @@ public class SmsIntentReceiver extends BroadcastReceiver
 			{
 				Log.i("MessageListener:",  message);
 				
-				//if(message.startsWith("LOCATE:"))
-				if(message.contains("LOCATE:"))
+				SharedPreferences passwdfile = context.getSharedPreferences(Consts.PASSWORD_PREF_KEY, 0);
+				String im = passwdfile.getString(Consts.PASSWORD_PREF_KEY, null);
+					
+				if (message.trim().toLowerCase().contains(im.toLowerCase())) // Verify code included is ok!
 				{
-					String[] tokens = message.split("LOCATE:");
-					if (tokens.length >= 2) 
-					{
-						SharedPreferences passwdfile = context.getSharedPreferences(Consts.PASSWORD_PREF_KEY, 0);
-						String im = passwdfile.getString(Consts.PASSWORD_PREF_KEY, null);
-						if (im.equals(tokens[1])) 
-						{
-							Intent mIntent = new Intent(context, LocationService.class);
-							mIntent.putExtra("dest", msg[i].getOriginatingAddress());
-							context.startService(mIntent);
-							Toast.makeText(context, "LocationService Started!", Toast.LENGTH_SHORT).show();
-						
-						//	sendGPSData(context, intent, msg[i]);
-						//	same as LocationService except "context", but is does not work, I don't know why.
-						}
-					}
+					Intent mIntent = new Intent(context, LocationService.class);
+					mIntent.putExtra("dest", msg[i].getOriginatingAddress());
+					context.startService(mIntent);
+					/*
+					 * a user said:
+					 * 
+					 * Thank you! Been waiting for someone to get this right! A
+					 * few suggestions for future updates:
+					 * 
+					 * - fine tune location. Was off by 1 block. 
+					 * - change  LOCATE: xxxxx to something innoculous like. HEYDUDE : xxxxx 
+					 * - do not show on 'lost phone' that location info has been sent. (May already do this, tested with my own phone)
+					 * 
+					 * Keep up the great work!
+					 * 
+					 * Mario Sellitti mario@mariosellitti.com (sent from my
+					 * mobile)
+					 */
+					// Toast.makeText(context, "LocationService Started!", Toast.LENGTH_SHORT).show();
 				}
+				
 			}
 		}
 	}

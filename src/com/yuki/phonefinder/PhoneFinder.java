@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +58,7 @@ public class PhoneFinder extends Activity{
         String im = passwdfile.getString(Consts.PASSWORD_PREF_KEY, null);
         editor = passwdfile.edit();
 		if(im == null){
-			im = "123456";			
+			im = "Heydude";
 			editor.putString(Consts.PASSWORD_PREF_KEY, im);
 			editor.commit();
 		}
@@ -78,10 +79,12 @@ public class PhoneFinder extends Activity{
                     public void onClick(DialogInterface dialog, int whichButton) {
                     	EditText et = (EditText)textEntryView.findViewById(R.id.password_edit);
                     	String vcode = et.getText().toString();
-                    	editor.putString(Consts.PASSWORD_PREF_KEY, vcode);
-                    	editor.commit();
-                		
-                		tvVerifyCode.setText(vcode); 
+                    	if( !vcode.trim().equals("") ){
+	                    	editor.putString(Consts.PASSWORD_PREF_KEY, vcode);
+	                    	editor.commit();
+	                		
+	                		tvVerifyCode.setText(vcode);
+                    	}
                     }
                 })
                 .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
@@ -116,7 +119,7 @@ public class PhoneFinder extends Activity{
             case MENU_INFO:
             	new AlertDialog.Builder(this) 
 			    .setTitle("Phone Finder") 
-			    .setMessage("Author:Kevin AN Email:anyupu@gmail.com Blog:" + Consts.URL_INFO_LINK) 
+			    .setMessage("Version: 1.1.0\nAuthor: evin AN Email: anyupu@gmail.com website: " + Consts.URL_INFO_LINK) 
 			    .show();
                 return true;
             case MENU_SHARE:

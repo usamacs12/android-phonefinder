@@ -18,13 +18,18 @@ package com.yuki.phonefinder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.gsm.SmsManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +47,7 @@ public class PhoneFinder extends Activity{
 
     private Editor editor;
     private TextView tvVerifyCode;
+    private TextView tvHelp;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +59,22 @@ public class PhoneFinder extends Activity{
                 showDialog(DIALOG_TEXT_ENTRY);
             }
         });
+        
+        Button btnTest = (Button) findViewById(R.id.button_test);
+        btnTest.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v) {
+        		LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        		Location location = locationManager.getLastKnownLocation("gps");
+        		if (location == null)
+        			location = locationManager.getLastKnownLocation("network");
+        		new AlertDialog.Builder(v.getContext()) 
+			    .setTitle("Location Testing...") 
+			    .setMessage(Consts.getAddr(location, PhoneFinder.this))
+			    .show();
+            }
+        });
         tvVerifyCode = (TextView)findViewById(R.id.textview_verify_code);
+        tvHelp = (TextView)findViewById(R.id.TextView_HELP);
         SharedPreferences passwdfile = getSharedPreferences( Consts.PASSWORD_PREF_KEY, 0);
         String im = passwdfile.getString(Consts.PASSWORD_PREF_KEY, null);
         editor = passwdfile.edit();
@@ -63,6 +84,10 @@ public class PhoneFinder extends Activity{
 			editor.commit();
 		}
 		tvVerifyCode.setText(im);
+		tvHelp.setText(im);
+		tvHelp.setTextColor( 0xff6699ff );
+		tvHelp.setTextSize( 24 );
+		tvHelp.setBackgroundColor( 0xffffff00 );
     }
     
     @Override
@@ -84,6 +109,7 @@ public class PhoneFinder extends Activity{
 	                    	editor.commit();
 	                		
 	                		tvVerifyCode.setText(vcode);
+	                		tvHelp.setText(vcode);
                     	}
                     }
                 })
@@ -119,7 +145,7 @@ public class PhoneFinder extends Activity{
             case MENU_INFO:
             	new AlertDialog.Builder(this) 
 			    .setTitle("Phone Finder") 
-			    .setMessage("Version: 1.1.0\nAuthor: evin AN Email: anyupu@gmail.com website: " + Consts.URL_INFO_LINK) 
+			    .setMessage("Version: 1.5.0\nAuthor: Kevin AN Email: anyupu@gmail.com website: " + Consts.URL_INFO_LINK) 
 			    .show();
                 return true;
             case MENU_SHARE:

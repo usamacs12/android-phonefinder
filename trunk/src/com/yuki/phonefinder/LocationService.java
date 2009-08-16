@@ -16,17 +16,12 @@
 package com.yuki.phonefinder;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Locale;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -51,37 +46,6 @@ public class LocationService extends Service {
 		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 	}
 	
-	public String getAddr(Location location){
-		String slocation = "unknown";
-		Geocoder gc = new Geocoder(this, Locale.getDefault());
-		Address addr;
-		Double lat = location.getLatitude();
-		Double lon = location.getLongitude();
-		try{
-			List<Address> myList = gc.getFromLocation(lat, lon, 1);
-			addr = myList.get(0);
-		}catch(Exception e){
-			Log.e("PhoneFinder","LocationService Exception", e );
-			return slocation;
-		}		
-
-		slocation = addr.getLocality();
-		slocation += "|Lat:" + String.format("%f",lat);
-		slocation += "|Lon:" + String.format("%f",lon);
-		if( addr.getThoroughfare() != null )
-			slocation += "|" + addr.getThoroughfare();
-		if( addr.getFeatureName() != null )
-			slocation += "|" + addr.getFeatureName();
-		if( addr.getAdminArea() != null )
-			slocation += "|" + addr.getAdminArea();
-		if( addr.getSubAdminArea() != null )
-			slocation += "|" + addr.getSubAdminArea();
-		if( addr.getPostalCode() != null )
-			slocation += "|" + addr.getPostalCode();
-		slocation += "\n" + String.format("http://maps.google.com/maps?q=%f", lat) + "%20" + String.format("%f", lon);
-		
-		return slocation;
-	}
 	/*
 	 * http://www.maximyudin.com/2008/12/07/android/vklyuchenievyklyuchenie-gps-na-g1-programmno/
 	 */
@@ -97,7 +61,7 @@ public class LocationService extends Service {
 	 
 		return allowedLocationProviders.contains(LocationManager.GPS_PROVIDER);
 	}	
-	 
+
 	private void setGPSStatus(boolean pNewGPSStatus)
 	{
 		String allowedLocationProviders =
@@ -131,23 +95,27 @@ public class LocationService extends Service {
 		}
 		catch(Exception e)
 		{
-			Log.e("§±§â§à§Ú§Ù§à§ê§Ý§à §Ú§ã§Ü§Ý§ð§é§Ö§ß§Ú§Ö: ", e.getClass().getName());
+			Log.e("%s:%s", e.getClass().getName());
 		}
 		return;
 	}
 	
 	public void onStart(final Intent intent, int startId) {
         super.onStart(intent, startId);
-        
-        if( ! getGPSStatus() )
-        	setGPSStatus(true);
-
+        try{
+	        if( ! getGPSStatus() )
+	        	setGPSStatus(true);
+	        }
+        catch(Exception e)
+		{
+			Log.e("%s:%s", e.getClass().getName());
+		}
         LocationListener locationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				// TODO Auto-generated method stub
 				PendingIntent dummyEvent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("com.yuki.phonefinder.IGNORE_ME"), 0);
-
-				SmsManager.getDefault().sendTextMessage(intent.getExtras().getString("dest"), null, getAddr(location), dummyEvent, dummyEvent);
+				//Toast.makeText(getBaseContext(), getAddr(location), Toast.LENGTH_SHORT).show();
+				SmsManager.getDefault().sendTextMessage(intent.getExtras().getString("dest"), null, Consts.getAddr(location, getApplicationContext()), dummyEvent, dummyEvent);
 				
 				locationManager.removeUpdates(this);
 			}
@@ -173,10 +141,12 @@ public class LocationService extends Service {
 		Location location = locationManager.getLastKnownLocation("gps");
 		if (location == null)
 			location = locationManager.getLastKnownLocation("network");
-
-		PendingIntent dummyEvent = PendingIntent.getBroadcast(this, 0, new Intent("com.yuki.phonefinder.IGNORE_ME"), 0);
-		
-		SmsManager.getDefault().sendTextMessage(intent.getExtras().getString("dest"), null, getAddr(location), dummyEvent, dummyEvent);
+		if (location != null){
+			PendingIntent dummyEvent = PendingIntent.getBroadcast(this, 0, new Intent("com.yuki.phonefinder.IGNORE_ME"), 0);
+			String dest = intent.getExtras().getString("dest");
+			String sms = Consts.getAddr(location, this);
+			SmsManager.getDefault().sendTextMessage(dest, null, sms, dummyEvent, dummyEvent);
+		}
 	}
 	
 	public void onDestroy(){

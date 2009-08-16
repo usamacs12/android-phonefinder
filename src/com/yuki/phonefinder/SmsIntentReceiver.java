@@ -22,7 +22,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.gsm.SmsMessage;
 import android.util.Log;
-
+import android.widget.Toast;
 public class SmsIntentReceiver extends BroadcastReceiver
 {	
 	private SmsMessage[] getMessagesFromIntent(Intent intent)
@@ -84,7 +84,7 @@ public class SmsIntentReceiver extends BroadcastReceiver
 					 * Mario Sellitti mario@mariosellitti.com (sent from my
 					 * mobile)
 					 */
-					// Toast.makeText(context, "LocationService Started!", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(context, "LocationService Started!", Toast.LENGTH_SHORT).show();
 				}
 				
 			}

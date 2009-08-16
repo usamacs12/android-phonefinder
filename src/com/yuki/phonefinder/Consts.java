@@ -15,6 +15,16 @@
 
 package com.yuki.phonefinder;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.util.Log;
+
 public final class Consts {
 	/** Market link to details of this application. */
 	static final String URL_MARKET_SEARCH =
@@ -23,4 +33,39 @@ public final class Consts {
     static final String URL_INFO_LINK = "http://code.google.com/p/android-phonefinder/";
     
     public static final String PASSWORD_PREF_KEY = "VERIFYCODE";
+    
+    static public String getAddr(Location location, Context ctx){
+		Double lat = location.getLatitude();
+		Double lon = location.getLongitude();
+		String slocation = "Lat:" + String.format("%f",lat);
+		slocation += "|Lon:" + String.format("%f",lon);
+		slocation += "\n" + String.format("http://maps.google.com/maps?q=%f", lat) + "%20" + String.format("%f", lon) + "\n"; 
+		//Toast.makeText(this, slocation, Toast.LENGTH_SHORT).show();
+		Geocoder gc = new Geocoder(ctx, Locale.getDefault());
+		Address addr;
+		try{
+			List<Address> myList = gc.getFromLocation(lat, lon, 1);
+			for(int i=0; i<myList.size(); i++){
+				addr = myList.get(i);
+				slocation += addr.getLocality();
+				if( addr.getThoroughfare() != null )
+					slocation += "|" + addr.getThoroughfare();
+				if( addr.getFeatureName() != null )
+					slocation += "|" + addr.getFeatureName();
+				if( addr.getAdminArea() != null )
+					slocation += "|" + addr.getAdminArea();
+				if( addr.getSubAdminArea() != null )
+					slocation += "|" + addr.getSubAdminArea();
+				if( addr.getPostalCode() != null )
+					slocation += "|" + addr.getPostalCode();
+			}
+		}
+		catch(IOException  e){
+			slocation += "[ERROR:network is unavailable!]";
+		}
+		catch(Exception  e){
+			Log.e("PhoneFinder","LocationService Exception", e );
+		}
+		return slocation;
+	}
 }

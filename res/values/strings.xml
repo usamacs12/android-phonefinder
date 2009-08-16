@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello"></string>
-    <string name="app_name">Phone Finder</string>
+    <string name="app_name">Phone Finder Pro</string>
     <string name="app_desc">When your phone is lost or stolen you will be able to use someone else's phone to retrieve the GPS coordinates at your phone's location to help you find it via a SMS include <B>Verify</B> Code set by yourself.</string>
     <string name="app_help">I've entered "Heydude" as default for the verify code. Now you can send a text message with "Heydude" as the body of the text as shown below:</string>
-    <string name="app_tip">It can be changed it to anything by clicking button above.</string>
+    <string name="app_tip">It can be changed it to anything by clicking button "Change Verify Code".</string>
     <string name="notify_text">Phone Finder Notice:</string>
+    <string name="test">test your location now</string>
 	<string name="alert_dialog_text_entry">Change Verify Code</string>
 	<string name="alert_dialog_password">New Verify Code:</string>
 	<string name="alert_dialog_ok">OK</string>

@@ -1,0 +1,1 @@
+When your phone is lost or stolen you will be able to use someone else's phone to retrieve the GPS coordinates at your phone's location to help you find it via a SMS with special format.
